@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Reports — BREACH</title>
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">&#9632; BREACH</span>
+  <a href="/">Dashboard</a>
+  <a href="/reports">Reports</a>
+</nav>
+<div class="container">
+  <h1 class="page-title">Reports</h1>
+  <div class="card">
+    {% if reports %}
+    <table>
+      <thead><tr><th>Title</th><th>Target</th><th>Format</th><th>Generated</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for report in reports %}
+      <tr>
+        <td>{{ report.title }}</td>
+        <td>{{ scans[report.scan_id].target if report.scan_id in scans else 'N/A' }}</td>
+        <td><span class="badge badge-info">{{ report.format.upper() }}</span></td>
+        <td style="color:var(--text2);font-size:.85em">{{ report.generated_at.strftime('%Y-%m-%d %H:%M') }}</td>
+        <td><a href="/api/report/{{ report.id }}" target="_blank" class="btn btn-secondary" style="font-size:.8em;padding:5px 12px">View</a></td>
+      </tr>
+      {% endfor %}
+      </tbody>
+    </table>
+    {% else %}
+    <p style="color:var(--text2);text-align:center;padding:40px">No reports yet. Complete a scan and generate a report.</p>
+    {% endif %}
+  </div>
+</div>
+</body>
+</html>

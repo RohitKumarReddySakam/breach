@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BREACH</title>
+<link rel="stylesheet" href="/static/css/style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.min.js"></script>
+</head>
+<body>
+<nav class="nav">
+  <span class="nav-brand">&#9632; BREACH</span>
+  <a href="/">Dashboard</a>
+  <a href="/reports">Reports</a>
+</nav>
+<div class="container">
+  <h1 class="page-title">Network Penetration Testing</h1>
+
+  <div class="stats-grid">
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.total_scans }}</div>
+      <div class="stat-label">Completed Scans</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.total_reports }}</div>
+      <div class="stat-label">Reports Generated</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-value">{{ stats.active_scans }}</div>
+      <div class="stat-label">Active Scans</div>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:24px">
+    <div class="card">
+      <h3 style="color:var(--accent);margin-bottom:18px">New Scan</h3>
+      <p style="color:var(--text2);font-size:.85em;margin-bottom:16px">
+        &#9888; Authorized use only. Obtain written permission before scanning.
+      </p>
+      <form id="scan-form">
+        <div class="form-group">
+          <label class="form-label">Target (IP, hostname, or CIDR)</label>
+          <input type="text" id="target" class="form-control" placeholder="e.g. 192.168.1.1 or example.com" required>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Scan Type</label>
+          <select id="scan_type" class="form-control">
+            <option value="quick">Quick (headers + SSL)</option>
+            <option value="standard" selected>Standard</option>
+            <option value="full">Full (all checks)</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label class="form-label">Port Range</label>
+          <select id="port_range" class="form-control">
+            <option value="common" selected>Common ports (26)</option>
+            <option value="top1000">Top 1000 ports</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary" style="width:100%">Start Scan</button>
+      </form>
+      <div id="progress-section" class="card" style="margin-top:16px;display:none">
+        <div id="progress-status" style="color:var(--text2);font-size:.9em;margin-bottom:8px">Initializing...</div>
+        <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h3 style="color:var(--accent);margin-bottom:18px">Recent Scans</h3>
+      {% if recent_scans %}
+      <table>
+        <thead><tr><th>Target</th><th>Status</th><th>Risk</th><th>Date</th></tr></thead>
+        <tbody>
+        {% for scan in recent_scans %}
+        <tr>
+          <td><a href="/scan/{{ scan.id }}">{{ scan.target }}</a></td>
+          <td><span class="badge badge-{{ scan.status.lower().split(':')[0] }}">{{ scan.status.split(':')[0] }}</span></td>
+          <td>{{ scan.risk_score }}</td>
+          <td style="color:var(--text2);font-size:.85em">{{ scan.created_at.strftime('%m/%d %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+      {% else %}
+      <p style="color:var(--text2)">No scans yet. Run your first scan above.</p>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<script src="/static/js/app.js"></script>
+</body>
+</html>
